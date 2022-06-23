@@ -1,0 +1,90 @@
+<div id="container" />
+// 获取初始位置
+      getloc(){
+        var url =
+          'https://webapi.amap.com/maps?v=1.4.15&key=a67ba35ce517d22dc9825a81ed255dc0&callback=onLoad&plugin=AMap.Geocoder,AMap.InfoWindow';
+        var jsapi = document.createElement('script');
+        jsapi.charset = 'utf-8';
+        jsapi.src = url;
+        document.head.appendChild(jsapi);
+        var that = this
+        window.onLoad = function() {
+          let mapDate = {
+            resizeEnable: true,
+            zoom: 18 ,//地图显示的缩放级别
+            zoomToAccuracy:true
+          }
+          if (that.activeId != '') {
+            mapDate.center = that.location
+          }
+          that.amap = new AMap.Map("container", mapDate)
+          that.geocoder = new AMap.Geocoder({
+            city: "010", //城市设为北京，默认：“全国”
+            radius: 1000 //范围，默认：500
+          })
+          // 获取  ToolBar
+          that.amap.plugin(["AMap.ToolBar"], function() {
+            //加载工具条
+            var tool = new AMap.ToolBar();
+            that.amap.addControl(tool);
+          });
+          //判断是是编辑还是新增获取定位信息
+          if (that.activeId=='') {
+            that.getCityLocation()
+          }else{
+            //创建一个标记点
+            that.marker = new AMap.Marker({
+              icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+              position: that.location
+            });
+            that.amap.add(that.marker)
+          }
+          that.infoWindow = new AMap.InfoWindow()
+          that.amap.on('click', function(e) {
+            const {
+              lat,
+              lng
+            } = e.lnglat
+            that.geocoder.getAddress([lng, lat], function(status, result) {
+              if (status === 'complete' && result.info === 'OK') {
+                // result为对应的地理位置详细信息
+                that.getAddress_callBack(result, [lng, lat])
+              }
+            })
+          });
+          that.ruleForm.selectedCity = that.city
+        }
+      },
+
+
+//获取定位信息
+      getCityLocation() {
+        let that = this
+        that.amap.plugin('AMap.Geolocation', function() {
+          var geolocation = new AMap.Geolocation({
+            enableHighAccuracy: true, //是否使用高精度定位，默认:true
+            timeout: 10000, //超过10秒后停止定位，默认：5s
+            buttonPosition: 'RB', //定位按钮的停靠位置
+            zoomToAccuracy: true, //定位成功后是否自动调整地图视野到定位点
+          })
+          that.amap.addControl(geolocation);
+          geolocation.getCurrentPosition(function(status, result) {
+            if (status == 'complete') {
+              // data是具体的定位信息
+              that.ruleForm.selectedCity = that.cityCodeChange(result.addressComponent.adcode)
+              that.ruleForm.address = result.formattedAddress
+              that.location = [result.position.lng, result.position.lat]
+              //创建一个标记点
+              that.marker = new AMap.Marker({
+                icon: "https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png",
+                position: that.location
+              });
+              that.amap.add(that.marker)
+            } else {
+              // 定位出错
+              that.ruleForm.selectedCity = '110101'
+            }
+          });
+        })
+      },
+

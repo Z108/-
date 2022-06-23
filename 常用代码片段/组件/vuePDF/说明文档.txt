@@ -1,0 +1,4 @@
+cnpm install --save vue-pdf
+
+//需要安装依赖
+//组件为按需加载，不需要在main.js中引用

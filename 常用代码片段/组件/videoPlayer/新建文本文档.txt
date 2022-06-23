@@ -1,0 +1,16 @@
+cnpm install @moefe/vue-aplayer --save
+cnpm i vue-video-player -S 
+// 播放器组件
+
+main.js
+// 视频 
+import VueVideoPlayer from 'vue-video-player'
+import 'video.js/dist/video-js.css'
+Vue.use(VueVideoPlayer)
+// 音频
+import APlayer from '@moefe/vue-aplayer';
+// Vue.use(APlayer, {
+//   defaultCover: 'https://github.com/u3u.png',
+//   productionTip: true,
+// });
+Vue.use(APlayer);

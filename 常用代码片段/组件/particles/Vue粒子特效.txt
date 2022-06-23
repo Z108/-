@@ -1,0 +1,8 @@
+Vue粒子特效（vue-particles插件）
+npm install vue-particles --save-dev  
+
+import VueParticles from 'vue-particles'  
+Vue.use(VueParticles)  
+
+教程可看
+https://www.jianshu.com/p/53199b842d25
